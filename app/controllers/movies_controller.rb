@@ -9,14 +9,6 @@ class MoviesController < ApplicationController
   def index
     @all_ratings = Movie.all_ratings
 
-    if params[:sort] == nil
-      if session[:sort] != nil
-        params[:sort] = session[:sort]
-      end
-    else
-      session[:sort] = params[:sort]
-    end
-
     if params[:ratings] == nil
       if session[:ratings] != nil
         params[:ratings] = session[:ratings]
@@ -24,6 +16,22 @@ class MoviesController < ApplicationController
     else
       session[:ratings] = params[:ratings]
     end
+
+    if params[:sort] == nil
+      if session[:sort] != nil
+        params[:sort] = session[:sort]
+        #flash.keep
+        redirect_to(movies_path(:sort => session[:sort], :ratings => session[:ratings], :commit => params[:commit]))
+      end
+    else
+      session[:sort] = params[:sort]
+    end
+=begin
+    if ((params[:sort] == nil && params[:ratings]== nil) && (session[:ratings] != nil || session[:sort] != nil))
+      flash.keep
+      redirect_to movies_path(:sort => session[:sort], :ratings => session[:ratings])
+    end
+=end
 
     @sort = params[:sort]
     if params[:ratings] != nil
@@ -58,9 +66,9 @@ class MoviesController < ApplicationController
       if @checked_ratings.nil?
         @movies = Movie.find(:all, :order => @sort)
       elsif @checked_ratings == @all_ratings
-        @movies = Movie.find(:all, :order =>@sort, :conditions => {:rating => @checked_ratings})
+        @movies = Movie.find(:all, :order => @sort, :conditions => { :rating => @checked_ratings})
       else
-        @movies = Movie.find(:all, :order => @sort, :conditions => {:rating => @checked_ratings.keys})
+        @movies = Movie.find(:all, :order => @sort, :conditions => { :rating => @checked_ratings.keys})
       end
     end
   end
