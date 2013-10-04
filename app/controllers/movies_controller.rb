@@ -12,6 +12,7 @@ class MoviesController < ApplicationController
     if params[:ratings] == nil
       if session[:ratings] != nil
         params[:ratings] = session[:ratings]
+        flash.keep
       end
     else
       session[:ratings] = params[:ratings]
@@ -20,7 +21,7 @@ class MoviesController < ApplicationController
     if params[:sort] == nil
       if session[:sort] != nil
         params[:sort] = session[:sort]
-        #flash.keep
+        flash.keep
         redirect_to(movies_path(:sort => session[:sort], :ratings => session[:ratings], :commit => params[:commit]))
       end
     else
