@@ -7,8 +7,31 @@ class MoviesController < ApplicationController
   end
 
   def index
+    @all_ratings = Movie.all_ratings
     @sort = params[:sort]
-    @movies = Movie.order(@sort)
+    #@checked_ratings = @all_ratings
+    if params[:ratings] != nil
+      @checked_ratings = params[:ratings] 
+    else
+      @checked_ratings = @all_ratings
+    end
+    if @sort.nil?
+      if params[:ratings] == nil
+        @movies = Movie.all
+      else
+        @checked_ratings = params[:ratings]
+        @movies = Movie.find(:all, :conditions => {:rating => @checked_ratings.keys})
+      end
+    else
+      if params[:ratings] == nil
+        @movies = Movie.find(:all, :order => @sort)
+      elsif @checked_ratings == @all_ratings
+        @movies = Movie.find(:all, :order =>@sort, :conditions => {:rating => @checked_ratings})
+      else
+        @checked_ratings = params[:ratings]
+        @movies = Movie.find(:all, :order => @sort, :conditions => {:rating => @checked_ratings.keys})
+      end
+    end
   end
 
   def new
