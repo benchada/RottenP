@@ -7,6 +7,8 @@ class MoviesController < ApplicationController
   end
 
   def index
+
+
     @all_ratings = Movie.all_ratings
     redirect = false
 
@@ -31,10 +33,8 @@ class MoviesController < ApplicationController
     end
 
     if redirect == true
-      redirect_to :sort => params[:sort], :ratings => params[:ratings], :commit => params[:commit]
+      redirect_to :ratings => session[:ratings], :sort => session[:sort], :commit => params[:commit]
     end
-
-
 
     @sort = params[:sort]
     if params[:ratings] != nil
