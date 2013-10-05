@@ -33,7 +33,7 @@ class MoviesController < ApplicationController
     end
 
     if redirect == true
-      redirect_to :ratings => session[:ratings], :sort => session[:sort], :commit => params[:commit]
+      redirect_to :sort => session[:sort], :ratings => session[:ratings], :commit => params[:commit]
     end
 
     @sort = params[:sort]
