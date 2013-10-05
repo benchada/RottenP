@@ -8,11 +8,13 @@ class MoviesController < ApplicationController
 
   def index
     @all_ratings = Movie.all_ratings
+    redirect = false
 
     if params[:ratings] == nil
       if session[:ratings] != nil
-        params[:ratings] = session[:ratings]
         flash.keep
+        params[:ratings] = session[:ratings]
+        redirect = true
       end
     else
       session[:ratings] = params[:ratings]
@@ -20,19 +22,19 @@ class MoviesController < ApplicationController
 
     if params[:sort] == nil
       if session[:sort] != nil
-        params[:sort] = session[:sort]
         flash.keep
-        redirect_to(movies_path(:sort => session[:sort], :ratings => session[:ratings], :commit => params[:commit]))
+        params[:sort] = session[:sort]
+        redirect = true
       end
     else
       session[:sort] = params[:sort]
     end
-=begin
-    if ((params[:sort] == nil && params[:ratings]== nil) && (session[:ratings] != nil || session[:sort] != nil))
-      flash.keep
-      redirect_to movies_path(:sort => session[:sort], :ratings => session[:ratings])
+
+    if redirect == true
+      redirect_to :sort => params[:sort], :ratings => params[:ratings], :commit => params[:commit]
     end
-=end
+
+
 
     @sort = params[:sort]
     if params[:ratings] != nil
@@ -40,21 +42,7 @@ class MoviesController < ApplicationController
     else
       @checked_ratings = @all_ratings
     end
-=begin
-    if @checked_ratings == @all_ratings
-      if @sort.nil?
-        @movies = Movie.all
-      else
-        @movies = Movie.find(:all, :order => @sort)
-      end
-    elsif @checked_ratings == params[:ratings]
-      if @sort.nil?
-        @movies = Movie.find(:all, :conditions => {:rating => @checked_ratings.keys})
-      else
-        @movies = Movie.find(:all, :order => @sort, :conditions => {:rating => @checked_ratings.keys})
-      end
-    end
-=end
+
     if @sort.nil?
       if @checked_ratings.nil?
         @movies = Movie.all
@@ -64,7 +52,7 @@ class MoviesController < ApplicationController
         @movies = Movie.find(:all, :conditions => {:rating => @checked_ratings.keys})
       end
     else
-      if @checked_ratings.nil?
+      if @checked_ratings != params[:ratings]
         @movies = Movie.find(:all, :order => @sort)
       elsif @checked_ratings == @all_ratings
         @movies = Movie.find(:all, :order => @sort, :conditions => { :rating => @checked_ratings})
